@@ -8,6 +8,7 @@ st.set_page_config(page_title="RAG Chatbot", layout="wide")
 # UI dla klucza API
 api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 
+
 if api_key:
     # Inicjalizacja komponentów
     db = VectorDatabase(api_key)
@@ -15,13 +16,14 @@ if api_key:
     engine = RAGEngine(api_key)
 
     uploaded_file = st.file_uploader("Dodaj PDF do bazy", type="pdf")
+    file_path = f"data/uploads/{uploaded_file.name}"
     
     if uploaded_file:
         # Zapis i procesowanie
-        with open(f"data/{uploaded_file.name}", "wb") as f:
+        with open(file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
         
-        chunks, stats = processor.process_pdf(f"data/{uploaded_file.name}")
+        chunks, stats = processor.process_pdf(file_path)
         db.create_or_update(chunks)
         st.success(f"Dodano {stats['filename']} ({stats['pages']} stron)")
 
