@@ -8,6 +8,8 @@ st.set_page_config(page_title="RAG Chatbot", layout="wide")
 
 # UI dla klucza API
 api_key = st.sidebar.text_input("OpenAI API Key", type="password")
+retrieval_mode = st.sidebar.selectbox("Retrieval", ["similarity", "mmr"])
+top_k = st.sidebar.slider("Top-k", 1, 10, 3)
 
 if api_key:
     # Inicjalizacja komponentów
@@ -39,7 +41,7 @@ if api_key:
             st.success(f"Dodano {stats['filename']} ({stats['pages']} stron) chunki: {stats['num_chunks']}")
 
     # Chat
-    retriever = db.load_retriever()
+    retriever = db.load_retriever(mode=retrieval_mode, k=top_k)
     if retriever:
 
         for message in st.session_state.messages:
@@ -56,8 +58,6 @@ if api_key:
             st.session_state.messages.append({"role": "assistant", "content": answer})
             st.chat_message("assistant").write(answer)
 
-            # with st.chat_message("assistant"):
-            #     st.write(response["answer"])
     else:
         st.warning("Brak indeksu. Dodaj PDF aby uruchomić czat")
         st.stop()
