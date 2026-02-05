@@ -11,7 +11,7 @@ class RAGEngine:
         system_prompt = (
             "Jesteś ekspertem. Odpowiadaj w oparciu o kontekst: {context}. "
             "Jeśli nie wiesz, odpowiedz: 'Informacja niedostępna w dokumentach'. "
-            "Na końcu podaj źródło i stronę."
+            "Na końcu zawsze podaj źródło i stronę."
         )
         prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
