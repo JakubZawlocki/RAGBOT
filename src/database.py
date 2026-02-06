@@ -17,8 +17,13 @@ class VectorDatabase:
         vector_store.save_local(self.storage_path)
         return vector_store
 
-    def load_retriever(self):
-        if os.path.exists(self.storage_path):
-            vs = FAISS.load_local(self.storage_path, self.embeddings, allow_dangerous_deserialization=True)
-            return vs.as_retriever(search_kwargs={"k": 3})
-        return None
+    def load_retriever(self, mode="similarity", k=3):
+        if not os.path.exists(self.storage_path):
+            return None
+        
+        vs = FAISS.load_local(self.storage_path, self.embeddings, allow_dangerous_deserialization=True)
+        
+        if mode == "mmr":
+            return vs.as_retriever(search_type="mmr", search_kwargs={"k":k, "fetch_k": max(20, k*5)})
+        
+        return vs.as_retriever(search_kwargs={"k":k})
